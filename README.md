@@ -1,24 +1,86 @@
 # SheetHappens
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sheet_happens`. To experiment with that code, run `bin/console` for an interactive prompt.
+**SheetHappens** is a Ruby gem that allows you to easily generate reports from your ActiveRecord models. It supports multiple output formats, including HTML, CSV, JSON, and XLS.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add this line to your application's Gemfile:
 
-Install the gem and add to the application's Gemfile by executing:
+```ruby
+gem 'sheet_happens'
+```
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+Then execute:
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+```bash
+$ bundle install
+```
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+Or install it yourself as:
 
-## Usage
+```bash
+$ gem install sheet_happens
+```
 
-TODO: Write usage instructions here
+Sure, here's how you could modify the documentation to include that use case:
+
+---
+
+# Usage
+
+## Direct Usage
+
+You can directly use **SheetHappens** in any part of your code:
+
+```ruby
+report = SheetHappens::Report.new(Unit.all)
+csv_data = report.to_csv
+
+# You can directly send this data as a file:
+send_data csv_data, filename: "unit_report_#{Time.zone.now.to_date}.csv"
+```
+
+This will generate a CSV report for all `Unit` records and send it as a downloadable file. The filename will be `"unit_report_<today's date>.csv"`.
+
+## Custom Report Classes
+
+If you want to customize the output of your reports, create a new report class in your `app/reports` directory that inherits from `SheetHappens::Report`.
+
+For example:
+
+```ruby
+# app/reports/unit_report.rb
+class UnitReport < SheetHappens::Report
+  def format_name(value)
+    value.reverse
+  end
+end
+```
+
+Then, in your controller or service object, you can use the report class like so:
+
+```ruby
+report = UnitReport.new(Unit.all)
+csv_data = report.to_csv
+```
+
+In this example, the `UnitReport` class reverses the names of the units in the report.
+
+---
+
+This modified documentation includes an example of directly using `SheetHappens::Report` and also an example of using a custom report class. This should provide your users with a good starting point for using your gem in their own applications.
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at [https://github.com/your_github_username/sheet_happens](https://github.com/your_github_username/sheet_happens).
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+---
+
+Note that I've included placeholders for things like your GitHub username and the exact license you're using. You should replace these with the actual values you plan to use.
 
 ## Development
 
