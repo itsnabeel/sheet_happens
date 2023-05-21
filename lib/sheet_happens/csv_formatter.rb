@@ -10,7 +10,9 @@ module SheetHappens
 
     def to_csv
       CSV.generate(headers: true) do |csv|
+        puts "headers: #{report.headers}"
         csv << report.headers
+        puts "results: #{report.results}"
         report.results.each do |result|
           csv << result
         end

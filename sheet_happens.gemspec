@@ -21,5 +21,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rubocop', '~> 0.60'
   s.add_development_dependency 'rubocop-performance', '~> 1.5'
   s.add_development_dependency 'rubocop-rspec', '~> 1.37'
+  s.add_dependency 'prawn'
+  s.add_dependency 'prawn-table'
   s.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -2,8 +2,9 @@ module SheetHappens
   class Report
     attr_accessor :collection
 
-    def initialize(collection)
+    def initialize(collection, options = {})
       @collection = collection
+      @options = options
     end
 
     def execute
@@ -11,11 +12,33 @@ module SheetHappens
     end
 
     def headers
-      @collection.model.column_names
+      if @options[:header_columns].present?
+        @options[:header_columns].map { |h| h[:title] }
+      else
+        @collection.model.column_names
+      end
     end
 
     def results
-      execute.map { |e| e.attributes.map { |f, v| format_field(f, v) } }
+      if execute.is_a?(ActiveRecord::Relation)
+        execute.map do |e|
+          e.attributes.map do |f, v|
+            format_field(f, v)
+          end
+        end
+      elsif execute.is_a?(Array)
+        execute.map do |e|
+          e.map do |f, v|
+            format_field(f, v)
+          end
+        end
+      elsif execute.is_a?(Hash)
+        execute.map do |f, v|
+          format_field(f, v)
+        end
+      else
+        []
+      end
     end
 
     def format_header(header)
@@ -48,12 +71,22 @@ module SheetHappens
       SheetHappens::CsvFormatter.new(self).to_csv
     end
 
-    def to_xls
-      # code to turn SQL into XLS report using headers and results
+    def to_pdf
+      SheetHappens::PdfFormatter.new(self).to_pdf
     end
 
-    def to_json(*_args)
-      # code to turn SQL into JSON report using headers and results
+    def json(*_args)
+      data = []
+      headers_symbols = headers.map(&:to_sym)  # Convert headers to symbols for faster lookup
+
+      results.each do |result|
+        row = {}
+        headers_symbols.each_with_index do |header, index|
+          row[header] = result[index]
+        end
+        data << row
+      end
+      data.to_json
     end
 
     def method_missing(method_name, *args, &block)
